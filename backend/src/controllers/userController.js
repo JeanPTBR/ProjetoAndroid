@@ -99,3 +99,30 @@ export const loginUser = async (req, res) => {
   }
 };
 
+export const updateUserPassword = async (req, res) => {
+
+  const { email, novaSenha } = req.body;
+
+  if (!email || !novaSenha) {
+    return res.json({
+      success: false, message: 'Dados incompletos'
+    });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(novaSenha, saltRounds);
+
+    await database.query('UPDATE usuarios SET senha = ? WHERE email = ?', [hashedPassword, email]);
+    res.json({
+      success: true
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.json({
+      success: false,
+      message: 'Erro ao redefinir a senha'
+    });
+  }
+
+};
