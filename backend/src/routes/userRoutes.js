@@ -6,3 +6,5 @@ const router = express.Router();
 
 router.put("/UpdateUser", updateUser);
 
+router.put("/UpdatePasswordUser", updateUserPassword);
+
