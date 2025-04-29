@@ -126,3 +126,29 @@ export const updateUserPassword = async (req, res) => {
   }
 
 };
+
+export const updateUser = (req, res) => {
+  const { nome, email, emailAtual } = req.body;
+
+  if (!nome || !email || !emailAtual) {
+    return res.status(400).json({
+      error: "nome, email e emailAtual são obrigatórios"
+    });
+  }
+
+  const query = 'UPDATE usuarios SET nome = ?, email = ? WHERE email = ?';
+  database.query(query, [nome.trim(), email.trim(), emailAtual.trim()], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Erro ao atualizar usuário" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    return res.status(200).json({
+      message: "Usuário atualizado com sucesso!",
+      user: { nome: nome.trim(), email: email.trim() }
+    });
+  });
+};
