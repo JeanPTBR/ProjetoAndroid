@@ -51,3 +51,51 @@ export const registerUser = async (req, res) => {
   } catch (error) { return res.status(500).json({ error: "Erro interno no servidor" }); }
 
 };
+
+export const loginUser = async (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
+    return res.status(400).json({
+      success: false, error: "Email e senha são obrigatórios"
+    });
+  }
+
+  try {
+    const query = "SELECT * FROM usuarios WHERE email = ?";
+    database.query(query, [email], async (err, results) => {
+      if (err) return res.status(500).json({
+        success: false,
+        error: "Erro de consulta"
+      });
+
+      if (results.length === 0) {
+        return res.status(401).json({
+          success: false, error: "Credenciais inválidas"
+        });
+      }
+
+      const user = results[0];
+      const senhaValida = await bcrypt.compare(senha, user.senha);
+
+      if (senhaValida) {
+        const { senha, ...userSemSenha } = user;
+        return res.json({
+          success: true,
+          user: userSemSenha
+        });
+      } else {
+        return res.status(401).json({
+          success: false,
+          error: "Credenciais inválidas"
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Erro interno no servidor"
+    });
+  }
+};
+
