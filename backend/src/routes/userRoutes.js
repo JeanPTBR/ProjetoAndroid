@@ -12,3 +12,10 @@ router.post("/register", registerUser);
 router.get("/register", (req, res) => {
     res.send("Voce esta na pagina de cadastro");
 });
+
+router.post("/login", loginUser);
+router.get("/login", (req, res) => {
+    res.send("Voce esta na pagina de login");
+});
+
+export default router;
